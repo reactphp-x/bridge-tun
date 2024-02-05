@@ -13,8 +13,20 @@ if ($type == '-s') {
         echo "Usage: php index.php -s <port>\n";
         exit(1);
     }
+
+    $file = $argv[3] ?? '';
+    if (empty($file)) {
+        echo "Usage: php index.php -s <port> <file>\n";
+        exit(1);
+    }
+
+    if (!file_exists($file)) {
+        echo "File not found $path \n";
+        exit(1);
+    }
+
     $verify = new VerifyUuid([]);
-    $verify->loopFile(10);
+    $verify->loopFile(10, $file);
     $server = new \App\Server($verify);
     $pool = $server->listen($port);
     echo "Server running at tcp://0.0.0.0:$port\n";

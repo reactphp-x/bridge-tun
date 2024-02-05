@@ -12,11 +12,13 @@ class VerifyUuid extends BaseVerifyUuid
         parent::__construct($uuidToSomething);
     }
 
-    public function loopFile($cycle = 10)
+    public function loopFile($cycle = 10, $file)
     {
-   
-        $file = getcwd() . '/tun.txt';
+
         if (!file_exists($file)) {
+            Loop::addTimer($cycle, function () use ($cycle, $file) {
+                $this->loopFile($cycle, $file);
+            });
             return;
         }
         $uuidToSomething = [];
@@ -36,8 +38,8 @@ class VerifyUuid extends BaseVerifyUuid
         echo var_export($uuidToSomething) . "\n";
         $this->update($uuidToSomething);
 
-        Loop::addTimer($cycle, function () use ($cycle) {
-            $this->loopFile($cycle);
+        Loop::addTimer($cycle, function () use ($cycle, $file) {
+            $this->loopFile($cycle, $file);
         });
     }
 }
