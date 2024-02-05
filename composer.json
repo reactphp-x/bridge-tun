@@ -1,0 +1,10 @@
+{
+    "require": {
+        "reactphp-framework/bridge": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}

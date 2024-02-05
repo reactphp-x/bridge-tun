@@ -1,0 +1,5 @@
+# Composer ignores
+/vendor
+composer.phar
+composer.lock
+tun.txt
