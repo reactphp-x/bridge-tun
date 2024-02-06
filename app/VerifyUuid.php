@@ -7,6 +7,9 @@ use React\EventLoop\Loop;
 
 class VerifyUuid extends BaseVerifyUuid
 {
+
+    protected $mtime;
+
     public function update($uuidToSomething)
     {
         parent::__construct($uuidToSomething);
@@ -21,6 +24,19 @@ class VerifyUuid extends BaseVerifyUuid
             });
             return;
         }
+
+        $stat = @\stat($file);
+        if ($stat !== false) {
+            $mtime = \gmdate('D, d M Y H:i:s', $stat['mtime']) . ' GMT';
+            if ($this->mtime === $mtime) {
+                Loop::addTimer($cycle, function () use ($cycle, $file) {
+                    $this->loopFile($cycle, $file);
+                });
+                return;
+            }
+            $this->mtime = $mtime;
+        }
+
         $uuidToSomething = [];
         $handle = fopen($file, "r");
         if ($handle) {
