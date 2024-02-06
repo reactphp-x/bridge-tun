@@ -26,6 +26,7 @@ class Server
         $pool = new Pool($this->serverBridge, [
             'max_connections' => 5,
             'connection_timeout' => 2,
+            'uuid_max_tunnel' => 1,
             'keep_alive' => 30,
             'wait_timeout' => 3
         ]);
