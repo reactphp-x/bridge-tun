@@ -157,7 +157,7 @@ class Client
         
         
                     $stream->on('data', function ($data) use ($TUN) {
-                        fwrite($TUN, $data);
+                        //fwrite($TUN, $data);
                     });
         
                     $stream->on('error', function ($e) {
