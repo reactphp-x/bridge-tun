@@ -19,6 +19,7 @@ class Server
     public function __construct(VerifyInterface $verify)
     {
         $this->serverBridge = new ServerBridge($verify);
+        $this->serverBridge->enableKeepAlive(40);
     }
 
     public function listen($port)
