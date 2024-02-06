@@ -24,7 +24,7 @@ class Server
     public function listen($port)
     {
         $pool = new Pool($this->serverBridge, [
-            'max_connections' => 50,
+            'max_connections' => 10,
             'connection_timeout' => 2,
             'keep_alive' => 30,
             'wait_timeout' => 3
