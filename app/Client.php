@@ -184,10 +184,10 @@ class Client
                     $stream->write($buffer);
         
         
-                    $stream->on('data', function ($data) use ($TUN) {
-                        echo "write to tun\n";
-                        fwrite($TUN, $data);
-                    });
+                    // $stream->on('data', function ($data) use ($TUN) {
+                    //     echo "write to tun\n";
+                    //     fwrite($TUN, $data);
+                    // });
         
                     $stream->on('error', function ($e) {
                         echo "file: " . $e->getFile() . "\n";
