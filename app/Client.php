@@ -15,6 +15,16 @@ class Client
         $this->clientBridge = new ClientBridge($uri, $uuid);
     }
 
+    private function isLinux()
+    {
+        return strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX';
+    }
+
+    private function isMac()
+    {
+        return strtoupper(substr(PHP_OS, 0, 6)) === 'DARWIN';
+    }
+
     protected function run_command($Command)
     {
         echo '+ ', $Command, "\n";
@@ -43,22 +53,26 @@ class Client
                 return;
             }
         
-            // Try to create a new TAP-Device
-            if (!is_resource($TUN = tuntap_new('', TUNTAP_DEVICE_TUN)))
-                die('Failed to create TAP-Device' . "\n");
-        
-            $Interface = tuntap_name($TUN);
-        
-            echo 'Created ', $Interface, "\n";
-            if (strtoupper(substr(PHP_OS, 0, 3)) === 'MAC') {
+          
+            if ($this->isMac()) {
+                if (!is_resource($TUN = tuntap_new('')))
+                    die('Failed to create TAP-Device' . "\n");
+
+                $Interface = tuntap_name($TUN);
                 echo 'Mac操作系统';
-            } 
-            // elseif (strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX') {
-            //     echo 'Linux操作系统';
-            // } elseif (strtoupper(substr(PHP_OS, 0, 3)) === 'MAC') {
-            //     echo 'Mac操作系统';
-            // } 
+                $this->run_command('ifconfig ' . $Interface . ' up');
+                $this->run_command('ifconfig ' . $Interface . " inet $ip/24 $ip");
+                $this->run_command("route -n add -net $ip -netmask 255.255.255.0 $ip");
+            }  
             else {
+                  // Try to create a new TAP-Device
+                if (!is_resource($TUN = tuntap_new('', TUNTAP_DEVICE_TUN))) {
+                    die('Failed to create TAP-Device' . "\n");
+                }
+    
+                $Interface = tuntap_name($TUN);
+            
+                echo 'Created ', $Interface, "\n";
                 $this->run_command('ip link set ' . $Interface . ' up');
                 $this->run_command("ip addr add $ip/24 dev " . $Interface);
                 $this->run_command("iptables -t nat -D POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
@@ -74,12 +88,16 @@ class Client
                     }
         
                     echo "Received SIGINT, stopping loop\n";
-                    $that->run_command("iptables -t nat -D POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
+                    if ($that->isLinux()) {
+                        $that->run_command("iptables -t nat -D POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
+                    }
                     Loop::stop();
                 });
                 Loop::addSignal(\defined('SIGTERM') ? \SIGTERM : 15, $f2 = static function () use ($ip, $that): void {
                     echo "Received SIGTERM, stopping loop\n";
-                    $that->run_command("iptables -t nat -D POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
+                    if ($that->isLinux()) {
+                        $that->run_command("iptables -t nat -D POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
+                    }
                     Loop::stop();
                 });
             } catch (\Exception $e){
@@ -167,6 +185,7 @@ class Client
         
         
                     $stream->on('data', function ($data) use ($TUN) {
+                        echo "write to tun\n";
                         fwrite($TUN, $data);
                     });
         
@@ -181,6 +200,8 @@ class Client
                         unset($ipTostreams[$ipTargetAddress]);
                     });
                     $ipTostreams[$ipTargetAddress] = $stream;
+                    echo "stream created\n3";
+                    echo spl_object_hash($stream) . "\n";
                 }
             }));
         });
