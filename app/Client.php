@@ -50,11 +50,21 @@ class Client
             $Interface = tuntap_name($TUN);
         
             echo 'Created ', $Interface, "\n";
-        
-            $this->run_command('ip link set ' . $Interface . ' up');
-            $this->run_command("ip addr add $ip/24 dev " . $Interface);
-            $this->run_command("iptables -t nat -D POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
-            $this->run_command("iptables -t nat -A POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'MAC') {
+                echo 'Mac操作系统';
+            } 
+            // elseif (strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX') {
+            //     echo 'Linux操作系统';
+            // } elseif (strtoupper(substr(PHP_OS, 0, 3)) === 'MAC') {
+            //     echo 'Mac操作系统';
+            // } 
+            else {
+                $this->run_command('ip link set ' . $Interface . ' up');
+                $this->run_command("ip addr add $ip/24 dev " . $Interface);
+                $this->run_command("iptables -t nat -D POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
+                $this->run_command("iptables -t nat -A POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
+            }
+            
         
             try {
                 $that = $this;
