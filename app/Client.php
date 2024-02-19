@@ -62,10 +62,10 @@ class Client
                 echo 'Mac操作系统';
                 $this->run_command('ifconfig ' . $Interface . ' up');
                 $ips = explode('.', $ip);
-                $_ip = $ips[0] . '.' . $ips[1] . '.' . '0' . '.0';
+                $_ip = $ips[0] . '.' . $ips[1] . '.' . '10' . '.0';
                 $this->run_command('ifconfig ' . $Interface . " inet $ip/24 $ip");
                 $this->run_command("route -n add -net $_ip/24 $ip");
-                $this->run_command("route -n add -net $_ip/8 $ip");
+                // $this->run_command("route -n add -net $_ip/8 $ip");
 
             } else {
                 // Try to create a new TAP-Device
