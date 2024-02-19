@@ -1,4 +1,9 @@
 {
+    "name": "reactphp-framework/bridge-tun",
+    "description": "php Bridge tun for linux and macos",
+    "license": "MIT",
+    "type": "project",
+    "keywords": ["reactphp-framework", "bridge-tun", "utun"],
     "require": {
         "reactphp-framework/bridge": "dev-master"
     },

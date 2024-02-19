@@ -59,9 +59,15 @@ if ($type == '-s') {
     $client = new \App\Client($uri, $uuid);
     $client->start();
 } else if ($type == '-u') {
+    if (file_exists('./tun.txt')) {
+        echo "File tun.txt already exists\n";
+        exit(1);
+    }
     for ($i = 0; $i < 10; $i++) {
         $uuid = Uuid::uuid4();
-        echo $uuid->toString() . "\n";
+        $p = $i + 1;
+        $line = $uuid->toString() . " 10.10.10.{$p}\n";
+        file_put_contents('./tun.txt', $line, FILE_APPEND);
     }
 } else {
     echo "Usage: php index.php -s|-c\n";
