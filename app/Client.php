@@ -59,7 +59,7 @@ class Client
                     die('Failed to create TAP-Device' . "\n");
 
                 $Interface = tuntap_name($TUN);
-                echo 'Mac操作系统';
+                echo "Mac操作系统\n";
                 $this->run_command('ifconfig ' . $Interface . ' up');
                 $ips = explode('.', $ip);
                 $_ip = $ips[0] . '.' . $ips[1] . '.' . '10' . '.0';
@@ -95,7 +95,6 @@ class Client
                         $that->run_command("iptables -t nat -D POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
                     } else if ($that->isMac()) {
                         $that->run_command("route -n delete -net $_ip $ip");
-                        // $that->run_command("route -n delete -net $ip 192.168.1.9");
                     }
                     Loop::stop();
                 });
@@ -105,7 +104,6 @@ class Client
                         $that->run_command("iptables -t nat -D POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
                     } else if ($that->isMac()) {
                         $that->run_command("route -n delete -net $_ip $ip");
-                        // $that->run_command("route -n delete -net $ip 192.168.1.9");
                     }
                     Loop::stop();
                 });

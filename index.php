@@ -50,16 +50,20 @@ if ($type == '-s') {
         echo "Usage: php index.php -c <uri> <uuid>\n";
         exit(1);
     }
+    if (isset($argv[4])) {
+        Client::$secretKey = $argv[4];
+    } else {
+        trigger_error("Secret key not set", E_USER_WARNING);
+        echo "Usage: php index.php -c <uri> <uuid> <secret_key>\n";
+    }
     $client = new \App\Client($uri, $uuid);
     $client->start();
-} 
-else if ($type == '-u') {
+} else if ($type == '-u') {
     for ($i = 0; $i < 10; $i++) {
         $uuid = Uuid::uuid4();
         echo $uuid->toString() . "\n";
     }
-}
-else {
+} else {
     echo "Usage: php index.php -s|-c\n";
     exit(1);
 }
