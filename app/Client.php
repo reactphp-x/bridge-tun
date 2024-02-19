@@ -66,8 +66,6 @@ class Client
                 $this->run_command('ifconfig ' . $Interface . " inet $ip/24 $ip");
                 $this->run_command("route -n add -net $_ip/24 $ip");
                 $this->run_command("route -n add -net $_ip/8 $ip");
-                // $this->run_command("route -n add -net $ip 192.168.1.2");
-                // $this->run_command("route add -net $ip/24 -interface ". $Interface);
 
             } else {
                 // Try to create a new TAP-Device
@@ -186,83 +184,11 @@ class Client
                             return $stream;
                         }
                         $stream->on('data', function ($data) use ($TUN) {
-                            echo "write to tun\n";
-                            echo "tun length of data: " . strlen($data) . "\n";
-                            $Data =  substr($data, 4);
-                            // Check length of data
-                            if (($Length = strlen($Data)) < 20) {
-                                trigger_error('IPv4-Frame too short');
-
-                                return false;
+                            if (strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX') {
+                                $data = hex2bin('00000800') . substr($data, 4);
+                            } else if (strtoupper(substr(PHP_OS, 0, 6)) === 'DARWIN') {
+                                $data = hex2bin('00000002') . substr($data, 4);
                             }
-
-                            // Parse default header
-                            $Byte = ord($Data[0]);
-                            $ipVersion = (($Byte >> 4) & 0xF);
-                            $ipHeaderLength = ($Byte & 0xF);
-
-                            if ($ipVersion != 4) {
-                                trigger_error('IP-Frame is version ' . $ipVersion . ', NOT IPv4');
-
-                                return false;
-                            } elseif (($ipHeaderLength < 5) || ($ipHeaderLength * 4 > $Length)) {
-                                trigger_error('IPv4-Frame too short for header');
-
-                                return false;
-                            }
-
-                            $ipTypeOfService = ord($Data[1]);
-                            $ipLength = (ord($Data[2]) << 8) | ord($Data[3]);
-                            $ipID = (ord($Data[4]) << 8) | ord($Data[5]);
-
-
-                            if ($Length < $ipLength) {
-                                trigger_error('IPv4-Frame size mismatch');
-
-                                return false;
-                            }
-
-                            $ipCSum = (($Byte << 8) | $ipTypeOfService) + $ipLength + $ipID;
-
-                            $Byte = ord($Data[6]);
-                            $ipFlags = (($Byte >> 5) & 0x7);
-
-                            if ($ipFlags & 0x01) {
-                                trigger_error('IPv4-Frame has invalid Flags');
-
-                                return false;
-                            }
-
-                            $ipFragmentOffset = (($Byte & 0x1F) << 8) | ord($Data[7]);
-                            $ipTimeToLive = ord($Data[8]);
-                            $ipProtocol = ord($Data[9]);
-                            $ipChecksum = (ord($Data[10]) << 8) | ord($Data[11]);
-                            $ipSourceAddress = (ord($Data[12]) << 24) | (ord($Data[13]) << 16) | (ord($Data[14]) << 8) | ord($Data[15]);
-                            $ipTargetAddress = (ord($Data[16]) << 24) | (ord($Data[17]) << 16) | (ord($Data[18]) << 8) | ord($Data[19]);
-                            echo "ipSourceAddress: " . long2ip($ipSourceAddress) . "\n";
-                            echo "ipTargetAddress: " . long2ip($ipTargetAddress) . "\n";
-                            $ipCSum +=
-                                (($Byte << 8) | ($ipFragmentOffset & 0xFF)) +
-                                (($ipTimeToLive << 8) | $ipProtocol) +
-                                (($ipSourceAddress >> 16) & 0xFFFF) + ($ipSourceAddress & 0xFFFF) +
-                                (($ipTargetAddress >> 16) & 0xFFFF) + ($ipTargetAddress & 0xFFFF);
-
-                            # TODO: Parse additional headers
-
-                            // Validate Checksum
-                            for ($p = 20; $p < $ipHeaderLength * 4; $p += 2)
-                                $ipCSum += (ord($Data[$p]) << 8) | ord($Data[$p + 1]);
-
-                            $ipCSum = (~(($ipCSum & 0xFFFF) + (($ipCSum >> 16) & 0xFFFF)) & 0xFFFF);
-
-                            if ($ipCSum != $ipChecksum) {
-                                trigger_error('IPv4-Frame has invalid Checksum');
-
-                                return false;
-                            }
-                            echo time() . "\n";
-                            echo "write to tun success\n";
-
                             fwrite($TUN, $data);
                         });
                         return $stream;
