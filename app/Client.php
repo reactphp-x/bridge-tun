@@ -62,9 +62,9 @@ class Client
                 echo "Mac操作系统\n";
                 $this->run_command('ifconfig ' . $Interface . ' up');
                 $ips = explode('.', $ip);
-                $_ip = $ips[0] . '.' . $ips[1] . '.' . '10' . '.0';
-                $this->run_command('ifconfig ' . $Interface . " inet $ip/24 $ip");
-                $this->run_command("route -n add -net $_ip/24 $ip");
+                $_ip = $ips[0] . '.' . $ips[1] . '.' . '0' . '.0';
+                $this->run_command('ifconfig ' . $Interface . " inet $ip/16 $ip");
+                $this->run_command("route -n add -net $_ip/16 $ip");
                 // $this->run_command("route -n add -net $_ip/8 $ip");
 
             } else {
@@ -77,7 +77,7 @@ class Client
 
                 echo 'Created ', $Interface, "\n";
                 $this->run_command('ip link set ' . $Interface . ' up');
-                $this->run_command("ip addr add $ip/24 dev " . $Interface);
+                $this->run_command("ip addr add $ip/16 dev " . $Interface);
                 $this->run_command("iptables -t nat -D POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
                 $this->run_command("iptables -t nat -A POSTROUTING -p all -d $ip/24 -j SNAT --to-source $ip");
             }
