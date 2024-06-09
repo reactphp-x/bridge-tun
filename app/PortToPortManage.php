@@ -9,6 +9,7 @@ class PortToPortManage
 {
 
     protected $mtime;
+    protected $md5;
 
     protected $configs = [];
 
@@ -33,17 +34,31 @@ class PortToPortManage
             return;
         }
 
-        $stat = @\stat($file);
-        if ($stat !== false) {
-            $mtime = \gmdate('D, d M Y H:i:s', $stat['mtime']) . ' GMT';
-            if ($this->mtime === $mtime) {
+        // $stat = @\stat($file);
+        // if ($stat !== false) {
+        //     $mtime = \gmdate('D, d M Y H:i:s', $stat['mtime']) . ' GMT';
+        //     if ($this->mtime === $mtime) {
+        //         echo "File is not change\n";
+        //         Loop::addTimer($cycle, function () use ($cycle, $file) {
+        //             $this->loopFile($cycle, $file);
+        //         });
+        //         return;
+        //     }
+        //     $this->mtime = $mtime;
+        // }
+        $md5 = md5_file($file);
+        if ($md5 !== false) {
+            if ($this->md5 === $md5) {
+                echo "File is not change\n";
                 Loop::addTimer($cycle, function () use ($cycle, $file) {
                     $this->loopFile($cycle, $file);
                 });
                 return;
             }
-            $this->mtime = $mtime;
+            $this->md5 = $md5;
         }
+
+        echo "File is change\n";
 
         $handle = fopen($file, "r");
         $configs = [];
@@ -85,6 +100,7 @@ class PortToPortManage
             if (!in_array($serverConfig['local_address'], $localAddresses)) {
                 $server->stop();
                 $this->servers->detach($server);
+                echo "Stop server {$serverConfig['local_address']}\n";
             } else {
                 $alleradyAddresses[] = $serverConfig['local_address'];
             }
@@ -108,6 +124,7 @@ class PortToPortManage
                     \Reactphp\Framework\Bridge\Client::$secretKey
                 )->start();
             $this->servers->attach($_server, $config);
+            echo "Start server {$config['local_address']}\n";
         }
         $this->configs = $configs;
         return $this;
