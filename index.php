@@ -63,10 +63,12 @@ if ($type == '-s') {
     if ($file && !file_exists($file)) {
         echo "Usage: php index.php -c <uri> <uuid> <secret_key> <file>\n";
         exit(1);
+    } else {
+
+        $portToPortManage = new \App\PortToPortManage($call);
+        $portToPortManage->loopFile(10, $file);
     }
 
-    $portToPortManage = new \App\PortToPortManage($call);
-    $portToPortManage->loopFile(10, $file);
 
 } else if ($type == '-u') {
     if (file_exists('./tun.txt')) {
