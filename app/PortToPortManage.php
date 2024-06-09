@@ -54,14 +54,14 @@ class PortToPortManage
                     continue;
                 }
                 $data = explode(' ', $line);
-                if (empty($data[0]) || empty($data[1]) || empty($data[2]) || empty($data[3])) {
+                if (empty($data[0]) || empty($data[1]) || empty($data[2])) {
                     continue;
                 }
                 $configs[] = [
-                    'local_uuid' => $data[0],
-                    'local_address' => $data[1],
-                    'remote_uuid' => $data[2],
-                    'remote_address' => $data[3]
+                    'local_uuid' => null,
+                    'local_address' => $data[0],
+                    'remote_uuid' => $data[1],
+                    'remote_address' => $data[2]
                 ];
             }
             fclose($handle);
@@ -98,7 +98,8 @@ class PortToPortManage
                 continue;
             }
             $_server = (new PortToPort($this->call))
-                ->from($config['local_uuid'], $config['local_address'], function ($data) {
+                ->from($config['local_uuid'], $config['local_address'], function ($data) use ($config) {
+                    // $data = str_replace("\r\nHost: 10.10.10.2:5001"."\r\n", "\r\nHost: ".$config['local_address']."\r\n", $data);
                     return $data;
                 })
                 ->to(
@@ -106,7 +107,8 @@ class PortToPortManage
                     $config['remote_address'],
                     function ($data) {
                         return $data;
-                    }
+                    },
+                    \Reactphp\Framework\Bridge\Client::$secretKey
                 )->start();
             $this->servers->attach($_server, $config);
         }
