@@ -57,7 +57,17 @@ if ($type == '-s') {
         echo "Usage: php index.php -c <uri> <uuid> <secret_key>\n";
     }
     $client = new \App\Client($uri, $uuid);
-    $client->start();
+    $call = $client->start();
+
+    $file = $argv[5] ?? '';
+    if ($file && !file_exists($file)) {
+        echo "Usage: php index.php -c <uri> <uuid> <secret_key> <file>\n";
+        exit(1);
+    }
+
+    $portToPortManage = new \App\PortToPortManage($call);
+    $portToPortManage->loopFile(10, $file);
+
 } else if ($type == '-u') {
     if (file_exists('./tun.txt')) {
         echo "File tun.txt already exists\n";
