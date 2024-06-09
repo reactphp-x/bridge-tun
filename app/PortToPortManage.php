@@ -76,9 +76,6 @@ class PortToPortManage
 
     public function start($configs)
     {
-        if (!$this->servers) {
-            $this->servers = new \SplObjectStorage;
-        }
 
         $localAddresses = array_column($configs, 'local_address');
         // 已经在的地址

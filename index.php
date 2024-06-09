@@ -64,9 +64,10 @@ if ($type == '-s') {
         echo "Usage: php index.php -c <uri> <uuid> <secret_key> <file>\n";
         exit(1);
     } else {
-
-        $portToPortManage = new \App\PortToPortManage($call);
-        $portToPortManage->loopFile(10, $file);
+        if ($file) {
+            $portToPortManage = new \App\PortToPortManage($call);
+            $portToPortManage->loopFile(5, $file);
+        }
     }
 
 
