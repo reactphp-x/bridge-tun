@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Reactphp\Framework\Bridge\Verify\VerifyUuid as BaseVerifyUuid;
+use ReactphpX\Bridge\Verify\VerifyUuid as BaseVerifyUuid;
 use React\EventLoop\Loop;
 
 class VerifyUuid extends BaseVerifyUuid

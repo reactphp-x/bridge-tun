@@ -2,14 +2,14 @@
 
 namespace App;
 
-use Reactphp\Framework\Bridge\Interface\VerifyInterface;
-use Reactphp\Framework\Bridge\Server as ServerBridge;
-use Reactphp\Framework\Bridge\Pool;
-use Reactphp\Framework\Bridge\Http\HttpBridge;
-use Reactphp\Framework\Bridge\WebSocket\WsBridge;
-use Reactphp\Framework\Bridge\Tcp\TcpBridge;
-use Reactphp\Framework\Bridge\BridgeStrategy;
-use Reactphp\Framework\Bridge\Io\Tcp;
+use ReactphpX\Bridge\Interface\VerifyInterface;
+use ReactphpX\Bridge\Server as ServerBridge;
+use ReactphpX\Bridge\Pool;
+use ReactphpX\Bridge\Http\HttpBridge;
+use ReactphpX\Bridge\WebSocket\WsBridge;
+use ReactphpX\Bridge\Tcp\TcpBridge;
+use ReactphpX\Bridge\BridgeStrategy;
+use ReactphpX\Bridge\Io\Tcp;
 
 class Server
 {

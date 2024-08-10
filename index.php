@@ -4,8 +4,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use App\VerifyUuid;
 use Ramsey\Uuid\Uuid;
-use Reactphp\Framework\Bridge\Client;
-use Reactphp\Framework\Bridge\Server;
+use ReactphpX\Bridge\Client;
+use ReactphpX\Bridge\Server;
 
 
 // Client::$debug = true;
