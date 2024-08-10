@@ -1,15 +1,15 @@
 {
-    "name": "reactphp-framework/bridge-tun",
+    "name": "reactphp-x/bridge-tun",
     "description": "php Bridge tun for linux and macos",
     "license": "MIT",
     "type": "project",
-    "keywords": ["reactphp-framework", "bridge-tun", "utun"],
+    "keywords": ["reactphp-x", "bridge-tun", "utun"],
     "autoload": {
         "psr-4": {
             "App\\": "app/"
         }
     },
     "require": {
-        "reactphp-framework/bridge": "dev-master"
+        "reactphp-x/bridge": "dev-master"
     }
 }

@@ -1,4 +1,4 @@
-# reactphp-framework-bridge-tun
+# reactphp-x-bridge-tun
 
 # require
 
@@ -9,7 +9,7 @@
 
 # install
 ```
-composer create-project reactphp-framework/bridge-tun bridge-tun dev-master
+composer create-project reactphp-x/bridge-tun bridge-tun dev-master
 ```
 
 # run
