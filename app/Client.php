@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Reactphp\Framework\Bridge\Client as ClientBridge;
+use ReactphpX\Bridge\Client as ClientBridge;
 use React\EventLoop\Loop;
 use function React\Async\async;
 
