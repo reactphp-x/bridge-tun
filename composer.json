@@ -10,6 +10,6 @@
         }
     },
     "require": {
-        "reactphp-x/bridge": "1.0.0@dev"
+        "reactphp-x/bridge": "1.0.x@dev"
     }
 }
