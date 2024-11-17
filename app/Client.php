@@ -15,6 +15,11 @@ class Client
         $this->clientBridge = new ClientBridge($uri, $uuid);
     }
 
+    public function forceServerRequest($forceServerRequest)
+    {
+        $this->clientBridge->forceServerRequest = $forceServerRequest;
+    }
+
     private function isLinux()
     {
         return strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX';

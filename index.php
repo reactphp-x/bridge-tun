@@ -50,6 +50,11 @@ if ($type == '-s') {
         echo "Usage: php index.php -c <uri> <uuid>\n";
         exit(1);
     }
+    $forceServerRequest = false;
+    if (str_contains($uuid, ':')) {
+        $forceServerRequest = true;
+        $uuid = explode(':', $uuid)[0];
+    }
     if (isset($argv[4])) {
         Client::$secretKey = $argv[4];
     } else {
@@ -57,6 +62,7 @@ if ($type == '-s') {
         echo "Usage: php index.php -c <uri> <uuid> <secret_key>\n";
     }
     $client = new \App\Client($uri, $uuid);
+    $client->forceServerRequest($forceServerRequest);
     $call = $client->start();
 
     $file = $argv[5] ?? '';
