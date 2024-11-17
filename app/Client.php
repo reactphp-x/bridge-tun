@@ -191,16 +191,6 @@ class Client
                             return $stream;
                         }
 
-                        global $ipTostreams;
-                        if (!isset($ipTostreams[$ipSourceAddress])) {
-                            $ipTostreams[$ipSourceAddress] = $stream;
-                            $stream->on('close', function () use ($ipSourceAddress) {
-                                global $ipTostreams;
-                                echo "tun stream close111\n";
-                                unset($ipTostreams[$ipSourceAddress]);
-                            });
-                        }
-
                         $stream->on('data', function ($data) use ($TUN) {
                             if (strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX') {
                                 $data = hex2bin('00000800') . substr($data, 4);
@@ -215,17 +205,6 @@ class Client
                     ]);
 
                     $stream->write($buffer);
-
-
-                    $stream->on('data', function ($data) use ($TUN) {
-                        echo "重用 stream\n";
-                        if (strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX') {
-                            $data = hex2bin('00000800') . substr($data, 4);
-                        } else if (strtoupper(substr(PHP_OS, 0, 6)) === 'DARWIN') {
-                            $data = hex2bin('00000002') . substr($data, 4);
-                        }
-                        fwrite($TUN, $data);
-                    });
 
                     $stream->on('error', function ($e) {
                         echo "file: " . $e->getFile() . "\n";
