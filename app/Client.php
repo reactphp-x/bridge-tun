@@ -123,10 +123,12 @@ class Client
             // Read Frames from the device
             echo 'Waiting for frames...', $br, "\n";
 
-
+            global $ipTostreams;
             $ipTostreams = [];
 
-            Loop::addReadStream($TUN, async(function ($TUN) use (&$ipTostreams) {
+            Loop::addReadStream($TUN, async(function ($TUN) {
+                global $ipTostreams;
+
                 // Try to read next frame from device
                 $Data = $buffer =  fread($TUN, 8192);
                 echo "length of buffer: " . strlen($buffer) . "\n";
@@ -178,7 +180,7 @@ class Client
                 } else {
                     echo "create stream\n";
                     $ipTostreams[$ipTargetAddress] = '';
-                    $stream = $this->clientBridge->call(function ($stream, $info) {
+                    $stream = $this->clientBridge->call(function ($stream, $info) use ($ipSourceAddress) {
                         global $TUN;
                         if (!isset($TUN) || !is_resource($TUN)) {
                             Loop::futureTick(function () use ($stream) {
@@ -186,6 +188,17 @@ class Client
                             });
                             return $stream;
                         }
+
+                        global $ipTostreams;
+                        if (!isset($ipTostreams[$ipSourceAddress])) {
+                            $ipTostreams[$ipSourceAddress] = $stream;
+                            $stream->on('close', function () use ($ipSourceAddress) {
+                                global $ipTostreams;
+                                echo "tun stream close111\n";
+                                unset($ipTostreams[$ipSourceAddress]);
+                            });
+                        }
+
                         $stream->on('data', function ($data) use ($TUN) {
                             if (strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX') {
                                 $data = hex2bin('00000800') . substr($data, 4);
@@ -202,10 +215,15 @@ class Client
                     $stream->write($buffer);
 
 
-                    // $stream->on('data', function ($data) use ($TUN) {
-                    //     echo "write to tun\n";
-                    //     fwrite($TUN, $data);
-                    // });
+                    $stream->on('data', function ($data) use ($TUN) {
+                        echo "重用 stream\n";
+                        if (strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX') {
+                            $data = hex2bin('00000800') . substr($data, 4);
+                        } else if (strtoupper(substr(PHP_OS, 0, 6)) === 'DARWIN') {
+                            $data = hex2bin('00000002') . substr($data, 4);
+                        }
+                        fwrite($TUN, $data);
+                    });
 
                     $stream->on('error', function ($e) {
                         echo "file: " . $e->getFile() . "\n";
@@ -213,7 +231,8 @@ class Client
                         echo $e->getMessage() . "\n";
                     });
 
-                    $stream->on('close', function () use (&$ipTostreams, $ipTargetAddress) {
+                    $stream->on('close', function () use ($ipTargetAddress) {
+                        global $ipTostreams;
                         echo "tun stream close\n";
                         unset($ipTostreams[$ipTargetAddress]);
                     });
