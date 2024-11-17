@@ -50,9 +50,9 @@ if ($type == '-s') {
         echo "Usage: php index.php -c <uri> <uuid>\n";
         exit(1);
     }
-    $forceServerRequest = false;
+    $forceServerRequest = true;
     if (str_contains($uuid, ':')) {
-        $forceServerRequest = true;
+        $forceServerRequest = false;
         $uuid = explode(':', $uuid)[0];
     }
     if (isset($argv[4])) {
