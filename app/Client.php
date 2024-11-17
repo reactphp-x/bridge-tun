@@ -164,7 +164,9 @@ class Client
                     echo "client not ready\n";
                     if (isset($ipTostreams[$ipTargetAddress])) {
                         echo "close stream\n";
-                        $ipTostreams[$ipTargetAddress]->close();
+                        if ($ipTostreams[$ipTargetAddress]) {
+                            $ipTostreams[$ipTargetAddress]->close();
+                        }
                         unset($ipTostreams[$ipTargetAddress]);
                     }
                     return;
