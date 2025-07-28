@@ -10,6 +10,8 @@
         }
     },
     "require": {
-        "reactphp-x/bridge": "dev-master"
+        "reactphp-x/bridge": "dev-master",
+        "react/async": "^4.3",
+        "react/promise-timer": "^1.11"
     }
 }
